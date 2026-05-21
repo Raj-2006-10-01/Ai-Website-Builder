@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma.js";
-const trustedOrigins = process.env.TRUSTED_ORIGINS?.split(',') || [];
+import { getAuthTrustedOrigins } from "./trustedOrigins.js";
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
@@ -10,7 +10,10 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
-    trustedOrigins,
+    user: {
+        deleteUser: { enabled: true }
+    },
+    trustedOrigins: getAuthTrustedOrigins,
     baseURL: process.env.BETTER_AUTH_URL,
     secret: process.env.BETTER_AUTH_SECRET,
     advanced: {
