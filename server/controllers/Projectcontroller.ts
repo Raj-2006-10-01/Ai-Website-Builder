@@ -143,7 +143,7 @@ export const makeRevision = async (req: Request, res: Response) => {
                 where: { id: userId },
                 data: { credits: { increment: 5 } }
             })
-            return ;
+            return;
         }
 
         const version = prisma.version.create({
@@ -221,6 +221,7 @@ export const rollbackToVersion = async (req: Request, res: Response) => {
 
         const version = project.versions.find((version: { id: string; code: string }) => version.id === versionId);
 
+
         if (!version) {
             return res.status(404).json({ message: 'version not found' });
         }
@@ -263,7 +264,7 @@ export const deleteProject = async (req: Request, res: Response) => {
         }
 
         await prisma.websiteProject.delete({
-            where:{id:projectId,userId}
+            where: { id: projectId, userId }
         })
         res.json({ message: 'project deleted successfully' })
     } catch (error: any) {
@@ -279,21 +280,21 @@ export const getProjectPreview = async (req: Request, res: Response) => {
         const projectId = getSingleParam(req.params.projectId);
 
         if (!userId) {
-            return res.status(401).json({message:'Unauthorized'})
+            return res.status(401).json({ message: 'Unauthorized' })
         }
 
         if (!projectId) {
             return res.status(400).json({ message: 'Project ID is required' })
         }
-        
-        const project=await prisma.websiteProject.findFirst({
-            where:{id:projectId,userId},
-            include:{versions:true}
+
+        const project = await prisma.websiteProject.findFirst({
+            where: { id: projectId, userId },
+            include: { versions: true }
         })
-        
+
         if (!project) {
-            return res.status(401).json({message:'Project not found'})
-            
+            return res.status(401).json({ message: 'Project not found' })
+
         }
         res.json({ project })
     } catch (error: any) {
@@ -306,12 +307,12 @@ export const getProjectPreview = async (req: Request, res: Response) => {
 export const getPublishedProject = async (req: Request, res: Response) => {
     try {
 
-        
-        const projects=await prisma.websiteProject.findMany({
-            where:{isPublished:true},
-            include:{user:true}
+
+        const projects = await prisma.websiteProject.findMany({
+            where: { isPublished: true },
+            include: { user: true }
         })
-        
+
         res.json({ projects })
     } catch (error: any) {
         console.log(error.code || error.message);
@@ -328,16 +329,16 @@ export const getProjectById = async (req: Request, res: Response) => {
         if (!projectId) {
             return res.status(400).json({ message: 'Project ID is required' });
         }
-        
-        const project=await prisma.websiteProject.findFirst({
-            where:{id:projectId}
+
+        const project = await prisma.websiteProject.findFirst({
+            where: { id: projectId }
         })
 
         if (!project || project.isPublished === false || !project.current_code) {
-            return res.status(404).json({message:'Project not found'});
+            return res.status(404).json({ message: 'Project not found' });
         }
-        
-        res.json({ code:project.current_code })
+
+        res.json({ code: project.current_code })
     } catch (error: any) {
         console.log(error.code || error.message);
         res.status(500).json({ message: error.message })
@@ -347,40 +348,40 @@ export const getProjectById = async (req: Request, res: Response) => {
 // to save the project
 export const saveProjectCode = async (req: Request, res: Response) => {
     try {
-        const userId=req.userId;
+        const userId = req.userId;
         const projectId = getSingleParam(req.params.projectId)
-        const {code}=req.body;
+        const { code } = req.body;
 
 
         if (!userId) {
-            return res.status(401).json({message:'Unauthorized'})
+            return res.status(401).json({ message: 'Unauthorized' })
         }
 
         if (!projectId) {
             return res.status(400).json({ message: 'Project ID is required' })
         }
-        
+
         if (!code) {
-            return res.status(400).json({message:'Code is required'})
+            return res.status(400).json({ message: 'Code is required' })
         }
-        
-        const project=await prisma.websiteProject.findFirst({
-            where:{id:projectId,userId}
+
+        const project = await prisma.websiteProject.findFirst({
+            where: { id: projectId, userId }
         })
-        
+
         if (!project) {
-            return res.status(404).json({message:'Project not found'})
+            return res.status(404).json({ message: 'Project not found' })
         }
 
         await prisma.websiteProject.update({
-            where:{id:projectId},
-            data:{
-                current_code:code,
-                current_version_index:''
+            where: { id: projectId },
+            data: {
+                current_code: code,
+                current_version_index: ''
             }
         })
-        
-        res.json({ message:'Project save successfully' })
+
+        res.json({ message: 'Project save successfully' })
     } catch (error: any) {
         console.log(error.code || error.message);
         res.status(500).json({ message: error.message })
