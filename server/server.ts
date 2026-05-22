@@ -22,15 +22,30 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Stripe webhook must be before JSON parsing
 app.post("/api/stripe", express.raw({ type: "application/json" }), stripeWebhook);
-app.all("/api/auth/{*any}", toNodeHandler(auth));
+
+// Better Auth routes - handle all auth paths
+app.all("/api/auth/*", toNodeHandler(auth));
+
 app.use(express.json({ limit: "50mb" }));
 
 app.get("/", (_req: Request, res: Response) => {
     res.send("Server is Live!");
 });
 
+app.get("/api/health", (_req: Request, res: Response) => {
+    res.json({ status: "ok" });
+});
+
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
+
+// Error handling middleware
+app.use((err: any, _req: Request, res: Response) => {
+    console.error(err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+});
 
 export default app;

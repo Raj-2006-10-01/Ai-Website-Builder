@@ -2,10 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "index.ts",
   "scripts": {
-    "start": "tsx server.ts",
-    "server": "nodemon --exec tsx server.ts",
+    "start": "tsx index.ts",
+    "server": "nodemon --exec tsx index.ts",
     "build": "prisma generate && tsc"
   },
   "keywords": [],
@@ -21,7 +21,8 @@
     "express": "^5.2.1",
     "openai": "^6.37.0",
     "pg": "^8.20.0",
-    "stripe": "^22.1.1"
+    "stripe": "^22.1.1",
+    "@vercel/node": "^3.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
